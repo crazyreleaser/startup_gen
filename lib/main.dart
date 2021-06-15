@@ -185,7 +185,7 @@ class _FavWordState extends State<FavWordPairs> {
         : <Widget>[];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Saved Suggestions'),
+        title: Text('The Best!'),
       ),
       body: Container(
         decoration: BoxDecoration(
