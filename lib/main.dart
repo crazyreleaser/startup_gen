@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-// import 'package:english_words/english_words.dart';
 import 'package:russian_words/russian_words.dart';
 import 'package:startup_gen/globals.dart';
 import 'package:startup_gen/downloader.dart';
@@ -12,8 +10,19 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   @override
+  _MyAppState createState() => _MyAppState();
+}
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    GlobalData.db.openDB().whenComplete(() {
+      print('DB initialized');
+    });
+    GlobalData.db.retrieveWords();
+  }
     Widget build(BuildContext context) {
     return MaterialApp(
       // debugShowCheckedModeBanner: false,
@@ -32,15 +41,6 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
-    late database db;
-    @override
-    void initState() {
-      super.initState();
-      this.db = database();
-      this.db.initDB().whenComplete(() {
-        print('DB initialized');
-      });
-    }
     Widget build(BuildContext context) {
       // final bgImage;
       double width = MediaQuery.of(context).size.width;
@@ -116,18 +116,18 @@ class _RandomWordsState extends State<RandomWords> {
             if (i.isOdd) return Divider();
             final index = i ~/ 2;
             if (index >= GlobalData.suggestions.length) {
-              GlobalData.suggestions.addAll(generateWordPairs().take(10));
+              generateWordPairs().take(10).forEach((element) {GlobalData.suggestions.add(element.asPascalCase.toString());});
             }
             return _buildRow(index, GlobalData.suggestions[index]);
           });
     }
-    Widget _buildRow(index, WordPair pair) {
+    Widget _buildRow(index, String pair) {
       final alreadySaved = GlobalData.saved.contains(pair);
       return Opacity(
-        opacity: .7,
+        opacity: 1,
         child: ListTile(
           title: Text(
-            index.toString() +' '+ pair.asPascalCase,
+            index.toString() +' '+ pair,
             style: GlobalData.biggerFont,
           ),
           trailing: Icon(
@@ -139,11 +139,11 @@ class _RandomWordsState extends State<RandomWords> {
             setState(() {
               if (alreadySaved) {
                 GlobalData.saved.remove(pair);
-                this.db.deleteWords(pair.asPascalCase.toString());
+                GlobalData.db.deleteWords(pair);
               } else {
                 GlobalData.saved.add(pair);
-                this.db.addWords(favWords(words: pair.asPascalCase.toString()));
-                this.db.retrieveWords();
+                GlobalData.db.addWords(favWords(words: pair));
+                GlobalData.db.retrieveWords();
               }
             });
           },
@@ -160,10 +160,10 @@ class _FavWordState extends State<FavWordPairs> {
   @override
   Widget build(BuildContext context) {
     final tiles = GlobalData.saved.map(
-          (WordPair pair) {
+          (String pair) {
         return ListTile(
           title: Text(
-            pair.asPascalCase,
+            pair,
             style: GlobalData.biggerFont,
           ),
           trailing: Icon(
@@ -174,6 +174,7 @@ class _FavWordState extends State<FavWordPairs> {
             print('Delete $pair');
             setState(() {
               GlobalData.saved.remove(pair);
+              GlobalData.db.deleteWords(pair);
             });
           },
         );

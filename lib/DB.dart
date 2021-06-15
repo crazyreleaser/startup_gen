@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:russian_words/russian_words.dart';
 import 'dart:async';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:startup_gen/globals.dart';
 
 class favWords {
   final int? id;
@@ -75,7 +74,8 @@ abstract class dbBase {
   }
 //____________________________________________________singleton________________
 
-  Future<Database> initDB() async {
+  Future<Database> openDB() async {
+    print('DB open Function');
     String path = await getDatabasesPath();
     return openDatabase(
       join(path, 'exam.db'),
@@ -91,22 +91,23 @@ abstract class dbBase {
 
   Future<int> addWords(favWords words) async {
     int result = 0;
-    final Database db = await initDB();
+    final Database db = await openDB();
     result = await db.insert('favwords', words.toMap());
     print('save db : ' + words.words);
     return result;
   }
 
   Future<List<favWords>> retrieveWords() async {
-    final Database db = await initDB();
+    final Database db = await openDB();
     final List<Map<String, Object?>> queryResult = await db.query('favwords');
     print('from db :');
     queryResult.map((e) => favWords.fromMap(e)).toList().forEach((element) {print(element.words);});
+    queryResult.map((e) => favWords.fromMap(e)).toList().forEach((element) {GlobalData.saved.add(element.words);});
     return queryResult.map((e) => favWords.fromMap(e)).toList();
   }
 
   Future<void> deleteWords(String words) async {
-    final db = await initDB();
+    final db = await openDB();
     await db.delete(
       'favwords',
       where: "words = ?",

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:english_words/english_words.dart';
-import 'package:russian_words/russian_words.dart';
+import 'package:startup_gen/DB.dart';
 
 class GlobalData {
-  static final suggestions = <WordPair>[];
-  static final saved = <WordPair>{};
+  static database db = database();
+  static final suggestions = <String>[];
+  static final saved = <String>{};
   static bool isBGdownloaded = false;
   static final bgname = "bgnew.jpg";
   static String bgPath = '';
