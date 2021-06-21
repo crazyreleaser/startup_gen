@@ -84,32 +84,6 @@ class _RandomWordsState extends State<RandomWords> {
           this.context,
           MaterialPageRoute(builder: (context) => FavWordPairs()),
       ).then((value) => setState(() {}));                                       // setState обновляет контент после возвращения на этот экран
-                                      // Navigator.push(context,
-                                      //   MaterialPageRoute<void>(
-                                      //     // NEW lines from here...
-                                      //     builder: (BuildContext context) {
-                                      //       final tiles = _saved.map(
-                                      //             (WordPair pair) {
-                                      //           return ListTile(
-                                      //             title: Text(
-                                      //               pair.asPascalCase,
-                                      //               style: _biggerFont,
-                                      //             ),
-                                      //           );
-                                      //         },
-                                      //       );
-                                      //       final divided = tiles.isNotEmpty
-                                      //           ? ListTile.divideTiles(context: context, tiles: tiles).toList()
-                                      //           : <Widget>[];
-                                      //       return Scaffold(
-                                      //         appBar: AppBar(
-                                      //           title: Text('Saved Suggestions'),
-                                      //         ),
-                                      //         body: ListView(children: divided),
-                                      //       );
-                                      //     }, // ...to here.
-                                      //   ),
-                                      // );
     }
     String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
     Widget _buildSuggestions() {
